@@ -22,8 +22,9 @@ FOR EXAMINERS
 
 Due to limitations by Spotify for schoolwork programs, please use the example Spotify account to log in:
 
-Username:
-Password:
+Email: exampleexaminer@gmail.com
+Username: 31cskad4iqej67l4vdl3oeipfh5i
+Password: &kf940%F!ynI
 
 If this account is not used then the program will not be able to run, even if you log in with your personal account.
 If logging in requires email verification, use the same details on GMAIL.
@@ -37,3 +38,4 @@ When running for the first time, or if the config file does not exist / cannot b
 - Copy the URL of the example domain tab.
 - Paste the FULL URL after the program prompt.
 
+There may be slight issues with modules between each OS. This was made and bug tested using both MacOS and Windows.
