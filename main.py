@@ -18,7 +18,6 @@ from urllib.request import urlopen
 from io import BytesIO
 from itertools import cycle
 
-
 class Main:
     
     def __init__(self):
@@ -131,17 +130,35 @@ class RecommendationsGUI():
                 row=1
             )
 
+            def playCallback(event):
+                playerCheck = media_player.is_playing()
+
+                if playerCheck == 0:
+                    media_player.play()
+                else:
+                    media_player.set_pause(1)
+                
+            def replayCallback(event):
+                media_player.pause()
+                media_player.set_media(media)
+                media_player.play()
+
             def yesCallback(event): #Adds recommendation to app curated playlist, goes to next recommendation.
                 self.spotify.playlist_add(playlist_id=playlistID, uris=recURIList)
 
                 for widget in self.gui.winfo_children():
                     widget.destroy()
+                
+                media_player.set_pause(1)
                 recScreen()
             
             def noCallback(event): #**EDIT THIS**
                 print('no code needed\n')
+                
                 for widget in self.gui.winfo_children():
                     widget.destroy()
+                
+                media_player.set_pause(1)
                 recScreen()
 
             #'Yes' button for song recommendation.
@@ -180,17 +197,21 @@ class RecommendationsGUI():
             
             trackPreviewURL = self.spotify.track(track_id=recID).preview_url
             media_player = vlc.MediaPlayer()
-            media = vlc.Media(trackPreviewURL)
+            try:
+                media = vlc.Media(trackPreviewURL)
+            except TypeError:
+                noPreviewButton = tk.Label(
+                    text="No preview available, sorry!",
+                    padx=7.5,
+                    pady=10,
+                    bg='black',
+                    fg='white'
+                )
+                noPreviewButton.grid(
+                    row=2,
+                    column=1
+                )
             media_player.set_media(media)
-            
-            def playCallback(event):
-                playerCheck = media_player.is_playing()
-                print(playerCheck)
-
-                if playerCheck == 0:
-                    media_player.play()
-                else:
-                    media_player.set_pause(1)
 
             playButton = tk.Label(
                 text="⏯️",
@@ -201,17 +222,59 @@ class RecommendationsGUI():
             )
             playButton.grid(
                 row=2,
-                column=1
+                column=0
             )
             playButton.bind(
                 "<Button-1>",
                 playCallback
             )
 
+            replayButton = tk.Label(
+                text="🔁",
+                padx=7.5,
+                pady=10,
+                bg='black',
+                fg='white'
+            )
+            replayButton.grid(
+                row=2,
+                column=2
+            )
+            replayButton.bind(
+                "<Button-1>",
+                replayCallback
+            )
+
+            menubar = tk.Menu(self.gui)
+            self.gui.config(menu=menubar)
+            
+            options_menu = tk.Menu(
+                menubar,
+                tearoff=0
+            )
+            
+            def goHome():
+                self.gui.destroy()
+                HomeGUI()
+
+            options_menu.add_command(
+                label='Home',
+                command=goHome
+            )
+            options_menu.add_command(
+                label='Exit',
+                command=self.gui.destroy,
+            )
+
+            menubar.add_cascade(
+                label="Options",
+                menu=options_menu,
+                underline=0
+            )
+
         recScreen()
         self.gui.mainloop()
         
-
 class HomeGUI:
     
     def __init__(self): #GUI creation and config.
@@ -241,7 +304,9 @@ class HomeGUI:
         recommendationsLabel = tk.Label(
             text='Recommendations',
             padx=50,
-            pady=20
+            pady=20,
+            background='black',
+            foreground='white'
         )
         recommendationsLabel.grid(
             column=1,
@@ -251,6 +316,8 @@ class HomeGUI:
             "<Button-1>",
             recommendationsLabelEvent
         )
+
+        
 
         self.gui.mainloop()
 
