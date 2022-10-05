@@ -1,0 +1,3 @@
+tekore==4.4.0
+python-vlc==3.0.16120
+Pillow
