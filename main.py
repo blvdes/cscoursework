@@ -41,7 +41,24 @@ class ScreenCalculations:
         heightDisplacement = int(((userScreenHeight - self.windowHeight) / 2) - 24) # -24px for Mac toolbar.
         return heightDisplacement
 
-class RecommendationsGUI():
+class TopTracksChoiceGUI:
+    
+    def __init__(self):
+        self.windowWidth = 600
+        self.windowHeight = 600
+        self.gui = tk.Tk()
+
+        widthDisplacement = ScreenCalculations.widthCalc(self)
+        heightDisplacement = ScreenCalculations.heightCalc(self)
+
+        self.gui.title("Spotipython Home")
+        self.gui.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}")
+        self.gui.resizable(False, False)
+        self.gui.configure(
+            background="#8edcaa",
+        )
+
+class RecommendationsGUI:
     
     def __init__(self):
         #GUI creation and config, Tekore config.
@@ -254,6 +271,7 @@ class RecommendationsGUI():
             )
             
             def goHome():
+                media_player.set_pause(1)
                 self.gui.destroy()
                 HomeGUI()
 
@@ -292,32 +310,46 @@ class HomeGUI:
             background="#8edcaa",
         )
 
-        for gridAmount in range(3):
-            self.gui.columnconfigure(gridAmount, weight=1)
-            self.gui.rowconfigure(gridAmount, weight=1)
-
         def recommendationsLabelEvent(event): #Switches window to recommendations GUI.
             self.gui.destroy()
             RecommendationsGUI()
 
+        def topTracksLabelEvent(event):
+            self.gui.destroy()
+            TopTracksChoiceGUI()
+
         #Recommendations button.
         recommendationsLabel = tk.Label(
             text='Recommendations',
-            padx=50,
-            pady=20,
             background='black',
             foreground='white'
-        )
-        recommendationsLabel.grid(
-            column=1,
-            row=1
         )
         recommendationsLabel.bind(
             "<Button-1>",
             recommendationsLabelEvent
         )
-
+        recommendationsLabel.place(
+            relx=0.1,
+            rely=0.05,
+            relwidth=0.25,
+            relheight=0.1
+        )
         
+        topTracksLabel = tk.Label(
+            text='Top Tracks',
+            background='black',
+            foreground='white'
+        )
+        topTracksLabel.place(
+            relx=0.1,
+            rely=0.175,
+            relwidth=0.25,
+            relheight=0.1
+        )
+        topTracksLabel.bind(
+            "<Button-1>",
+            topTracksLabelEvent
+        )
 
         self.gui.mainloop()
 
