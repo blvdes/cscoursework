@@ -62,6 +62,20 @@ class ShortTermGUI(ParentGUI):
         super().__init__()
         self.title("Short Term Top Tracks")
 
+        self.cfgfile = 'tekore.cfg'
+        self.conf = tekore.config_from_file(self.cfgfile, return_refresh=True)
+        self.token = tekore.refresh_user_token(*self.conf[:2], self.conf[3])    
+        self.spotify = tekore.Spotify(self.token)
+
+        topTracks = self.spotify.current_user_top_tracks(time_range = 'short_term', limit=50)
+        topTracksNameList = []
+        topTracksArtistList = []
+        topTracksIDList = []
+        for track in topTracks.items:
+            topTracksNameList.append(track.name)
+            topTracksArtistList.append(track.artists[0].name)
+            topTracksIDList.append(track.id)
+
 class TopTracksChoiceGUI(ParentGUI):
     
     def __init__(self):
