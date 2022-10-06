@@ -58,6 +58,10 @@ class TopTracksChoiceGUI:
             background="#8edcaa",
         )
 
+        shortTermButton = tk.Label(
+            text="Short-term (4 weeks)"
+        )
+
 class RecommendationsGUI:
     
     def __init__(self):
