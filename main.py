@@ -24,70 +24,109 @@ class Main:
         Setup() #Runs config and refresh token setup to be used throughout program.
         HomeGUI() #Runs main GUI.
 
-class ScreenCalculations:
+class ParentGUI(tk.Tk):
+    
+    def __init__(self):
+        super().__init__()
+
+        self.windowWidth = 600
+        self.windowHeight = 500
+
+        widthDisplacement = ScreenCalculations.widthCalc(self)
+        heightDisplacement = ScreenCalculations.heightCalc(self)
+
+        self.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}")
+        self.resizable(False, False)
+        self.configure(
+            background="#8edcaa",
+        )
+
+class ScreenCalculations(ParentGUI):
 
     def __init__(self):
-        self.windowWidth = 600
-        self.windowHeight = 600
-        self.gui = tk.Tk()
+        super().__init__()
     
     def widthCalc(self): #Centers GUI on x-axis.
-        userScreenWidth = self.gui.winfo_screenwidth()
+        userScreenWidth = self.winfo_screenwidth()
         widthDisplacement = int(((userScreenWidth - self.windowWidth) / 2))
         return widthDisplacement
 
     def heightCalc(self): #Centers GUI on y-axis.
-        userScreenHeight = self.gui.winfo_screenheight()
+        userScreenHeight = self.winfo_screenheight()
         heightDisplacement = int(((userScreenHeight - self.windowHeight) / 2) - 24) # -24px for Mac toolbar.
         return heightDisplacement
 
-class TopTracksChoiceGUI:
+class ShortTermGUI(ParentGUI):
+
+    def __init__(self):
+        super().__init__()
+        self.title("Short Term Top Tracks")
+
+class TopTracksChoiceGUI(ParentGUI):
     
     def __init__(self):
-        self.windowWidth = 600
-        self.windowHeight = 600
-        self.gui = tk.Tk()
+        super().__init__()
 
-        widthDisplacement = ScreenCalculations.widthCalc(self)
-        heightDisplacement = ScreenCalculations.heightCalc(self)
-
-        self.gui.title("Spotipython Home")
-        self.gui.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}")
-        self.gui.resizable(False, False)
-        self.gui.configure(
-            background="#8edcaa",
-        )
+        self.title("Top Tracks Menu")
+ 
+        def shortTermCallback(event):
+            self.destroy()
+            ShortTermGUI()
 
         shortTermButton = tk.Label(
-            text="Short-term (4 weeks)"
+            text="Short-term (4 weeks)",
+            bg="black",
+            fg="white"
+        )
+        shortTermButton.place(
+            relx=0.35,
+            rely=0.2,
+            relwidth=0.3,
+            relheight=0.1
+        )
+        shortTermButton.bind(
+            "<Button-1>",
+            shortTermCallback
+        )
+        
+        mediumTermButton = tk.Label(
+            text="Medium-term (6 months)",
+            bg="black",
+            fg="white"
+        )
+        mediumTermButton.place(
+            relx=0.35,
+            rely=0.45,
+            relwidth=0.3,
+            relheight=0.1
+        )
+        
+        longTermButton = tk.Label(
+            text="Long-term (All time)",
+            bg="black",
+            fg="white"
+        )
+        longTermButton.place(
+            relx=0.35,
+            rely=0.7,
+            relwidth=0.3,
+            relheight=0.1
         )
 
-class RecommendationsGUI:
+class RecommendationsGUI(ParentGUI):
     
     def __init__(self):
-        #GUI creation and config, Tekore config.
+        super().__init__()
         self.cfgfile = 'tekore.cfg'
         self.conf = tekore.config_from_file(self.cfgfile, return_refresh=True)
         self.token = tekore.refresh_user_token(*self.conf[:2], self.conf[3])    
         self.spotify = tekore.Spotify(self.token)
-
-        self.windowWidth = 600
-        self.windowHeight = 500
-        self.gui = tk.Tk()
-
-        widthDisplacement = ScreenCalculations.widthCalc(self)
-        heightDisplacement = ScreenCalculations.heightCalc(self)
         
-        self.gui.title("Recommendations")
-        self.gui.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}")
-        self.gui.resizable(False, False)
-        self.gui.configure(
-            background="#8edcaa",
-        )
+        self.title("Recommendations")
 
         for gridAmount in range(3):
-            self.gui.columnconfigure(gridAmount, weight=1)
-            self.gui.rowconfigure(gridAmount, weight=1)
+            self.columnconfigure(gridAmount, weight=1)
+            self.rowconfigure(gridAmount, weight=1)
 
         def playlistCheck(): #Checks if app curated playlist has already been created, if not then create playlist.
             userID = self.spotify.current_user().id
@@ -138,7 +177,7 @@ class RecommendationsGUI:
             photo = ImageTk.PhotoImage(resized_image)
 
             panel = tk.Label(
-                self.gui, 
+                self, 
                 image=photo,
                 background="black", 
                 foreground="white", 
@@ -167,7 +206,7 @@ class RecommendationsGUI:
             def yesCallback(event): #Adds recommendation to app curated playlist, goes to next recommendation.
                 self.spotify.playlist_add(playlist_id=playlistID, uris=recURIList)
 
-                for widget in self.gui.winfo_children():
+                for widget in self.winfo_children():
                     widget.destroy()
                 
                 media_player.set_pause(1)
@@ -176,7 +215,7 @@ class RecommendationsGUI:
             def noCallback(event): #**EDIT THIS**
                 print('no code needed\n')
                 
-                for widget in self.gui.winfo_children():
+                for widget in self.winfo_children():
                     widget.destroy()
                 
                 media_player.set_pause(1)
@@ -266,8 +305,8 @@ class RecommendationsGUI:
                 replayCallback
             )
 
-            menubar = tk.Menu(self.gui)
-            self.gui.config(menu=menubar)
+            menubar = tk.Menu(self)
+            self.config(menu=menubar)
             
             options_menu = tk.Menu(
                 menubar,
@@ -276,7 +315,7 @@ class RecommendationsGUI:
             
             def goHome():
                 media_player.set_pause(1)
-                self.gui.destroy()
+                self.destroy()
                 HomeGUI()
 
             options_menu.add_command(
@@ -285,7 +324,7 @@ class RecommendationsGUI:
             )
             options_menu.add_command(
                 label='Exit',
-                command=self.gui.destroy,
+                command=self.destroy,
             )
 
             menubar.add_cascade(
@@ -295,31 +334,20 @@ class RecommendationsGUI:
             )
 
         recScreen()
-        self.gui.mainloop()
+        self.mainloop()
         
-class HomeGUI:
+class HomeGUI(ParentGUI):
     
     def __init__(self): #GUI creation and config.
-        self.windowWidth = 600
-        self.windowHeight = 600
-        self.gui = tk.Tk()
-
-        widthDisplacement = ScreenCalculations.widthCalc(self)
-        heightDisplacement = ScreenCalculations.heightCalc(self)
-
-        self.gui.title("Spotipython Home")
-        self.gui.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}")
-        self.gui.resizable(False, False)
-        self.gui.configure(
-            background="#8edcaa",
-        )
+        super().__init__()
+        self.title("Spotipython Home")
 
         def recommendationsLabelEvent(event): #Switches window to recommendations GUI.
-            self.gui.destroy()
+            self.destroy()
             RecommendationsGUI()
 
         def topTracksLabelEvent(event):
-            self.gui.destroy()
+            self.destroy()
             TopTracksChoiceGUI()
 
         #Recommendations button.
@@ -355,7 +383,7 @@ class HomeGUI:
             topTracksLabelEvent
         )
 
-        self.gui.mainloop()
+        self.mainloop()
 
 class Setup:
     
