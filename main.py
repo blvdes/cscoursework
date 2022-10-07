@@ -62,7 +62,7 @@ class ShortTermGUI(tk.Tk):
         super().__init__()
         
         self.windowWidth = 600
-        self.windowHeight = 800
+        self.windowHeight = 600
 
         widthDisplacement = ScreenCalculations.widthCalc(self)
         heightDisplacement = ScreenCalculations.heightCalc(self)
@@ -109,15 +109,26 @@ class ShortTermGUI(tk.Tk):
             global tempArtistList
             global tempIDList
             global tempImageList
+
             tempNameList = []
             tempArtistList = []
             tempIDList = []
             tempImageList = []
 
-            for i in range(topTrackCount):
+            for i in range(topTrackCount - 9, topTrackCount + 1):
                 tempNameList.append(topTracksNameList[i])
                 tempArtistList.append(topTracksArtistList[i])
                 tempIDList.append(topTracksIDList[i])
+                
+                URL = topTracksImageList[i]
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((50,50), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)                
+                
+                tempImageList.append(photo)
 
         def previousPage():
             
@@ -129,24 +140,26 @@ class ShortTermGUI(tk.Tk):
             global tempArtistList
             global tempIDList
             global tempImageList
+
             tempNameList = []
             tempArtistList = []
             tempIDList = []
             tempImageList = []
 
-            for i in range(topTrackCount):
+            for i in range(topTrackCount - 9, topTrackCount + 1):
                 tempNameList.append(topTracksNameList[i])
                 tempArtistList.append(topTracksArtistList[i])
                 tempIDList.append(topTracksIDList[i])
-
-        def openImage(URL):
-            u = urlopen(URL)
-            raw_data = u.read()
-            u.close()
-            im = Image.open(BytesIO(raw_data))
-            resized_image= im.resize((300,300), Image.Resampling.LANCZOS)
-            photo = ImageTk.PhotoImage(resized_image)
-            return photo
+                
+                URL = topTracksImageList[i]
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((50,50), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)                
+                
+                tempImageList.append(photo)
 
         def showPage():
 
@@ -224,8 +237,125 @@ class ShortTermGUI(tk.Tk):
                     backCallback
                 )
 
+            firstLabel = tk.Label(
+                image=tempImageList[0],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-8} - '{tempNameList[0]}'\n{tempArtistList[0]}",
+                compound="right"
+            )
+            firstLabel.grid(
+                row=1,
+                column=1
+            )
 
+            secondLabel = tk.Label(
+                image=tempImageList[1],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-7} - '{tempNameList[1]}'\n{tempArtistList[1]}",
+                compound="right"
+            )
+            secondLabel.grid(
+                row=1,
+                column=2
+            )
 
+            thirdLabel = tk.Label(
+                image=tempImageList[2],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-6} - '{tempNameList[2]}'\n{tempArtistList[2]}",
+                compound="right"
+            )
+            thirdLabel.grid(
+                row=2,
+                column=1
+            )
+
+            fourthLabel = tk.Label(
+                image=tempImageList[3],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-5} - '{tempNameList[3]}'\n{tempArtistList[3]}",
+                compound="right"
+            )
+            fourthLabel.grid(
+                row=2,
+                column=2
+            )            
+
+            fifthLabel = tk.Label(
+                image=tempImageList[4],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-4} - '{tempNameList[4]}'\n{tempArtistList[4]}",
+                compound="right"
+            )
+            fifthLabel.grid(
+                row=3,
+                column=1
+            )
+
+            sixthLabel = tk.Label(
+                image=tempImageList[0],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-3} - '{tempNameList[5]}'\n{tempArtistList[5]}",
+                compound="right"
+            )
+            sixthLabel.grid(
+                row=3,
+                column=2
+            )
+
+            seventhLabel = tk.Label(
+                image=tempImageList[6],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-2} - '{tempNameList[6]}'\n{tempArtistList[6]}",
+                compound="right"
+            )
+            seventhLabel.grid(
+                row=4,
+                column=1
+            )
+
+            eighthLabel = tk.Label(
+                image=tempImageList[7],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-1} - '{tempNameList[7]}'\n{tempArtistList[7]}",
+                compound="right"
+            )
+            eighthLabel.grid(
+                row=4,
+                column=2
+            )
+
+            ninthLabel = tk.Label(
+                image=tempImageList[8],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount} - '{tempNameList[8]}'\n{tempArtistList[8]}",
+                compound="right"
+            )
+            ninthLabel.grid(
+                row=5,
+                column=1
+            )
+
+            tenthLabel = tk.Label(
+                image=tempImageList[9],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount+1} - '{tempNameList[9]}'\n{tempArtistList[9]}",
+                compound="right"
+            )
+            tenthLabel.grid(
+                row=5,
+                column=2
+            )
 
         nextPage()        
         showPage()
