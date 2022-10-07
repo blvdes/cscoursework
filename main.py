@@ -56,12 +56,11 @@ class ScreenCalculations(ParentGUI):
         heightDisplacement = int(((userScreenHeight - self.windowHeight) / 2) - 24) # -24px for Mac toolbar.
         return heightDisplacement
 
-class ShortTermGUI(tk.Tk):
-
+class LongTermGUI(tk.Tk):
     def __init__(self):
         super().__init__()
         
-        self.windowWidth = 600
+        self.windowWidth = 800
         self.windowHeight = 600
 
         widthDisplacement = ScreenCalculations.widthCalc(self)
@@ -72,12 +71,12 @@ class ShortTermGUI(tk.Tk):
         self.configure(
             background="#8edcaa",
         )
-        self.title("Short Term Top Tracks")
+        self.title("Long Term Top Tracks")
 
         for rowAmount in range(6):
             self.rowconfigure(rowAmount, weight=1)
         
-        for columnAmount in range(4):
+        for columnAmount in range(2):
             self.columnconfigure(columnAmount, weight=1)
 
         self.cfgfile = 'tekore.cfg'
@@ -85,7 +84,7 @@ class ShortTermGUI(tk.Tk):
         self.token = tekore.refresh_user_token(*self.conf[:2], self.conf[3])    
         self.spotify = tekore.Spotify(self.token)
 
-        topTracks = self.spotify.current_user_top_tracks(time_range = 'short_term', limit=50)
+        topTracks = self.spotify.current_user_top_tracks(time_range = 'long_term', limit=50)
         topTracksNameList = []
         topTracksArtistList = []
         topTracksIDList = []
@@ -103,7 +102,6 @@ class ShortTermGUI(tk.Tk):
             
             global topTrackCount
             topTrackCount += 10
-            print(topTrackCount)
 
             global tempNameList
             global tempArtistList
@@ -134,7 +132,6 @@ class ShortTermGUI(tk.Tk):
             
             global topTrackCount
             topTrackCount -= 10
-            print(topTrackCount)
 
             global tempNameList
             global tempArtistList
@@ -178,7 +175,7 @@ class ShortTermGUI(tk.Tk):
             if topTrackCount == 49:
 
                 backButton = tk.Label(
-                    text="<",
+                    text="< Back",
                     bg='black',
                     fg='white',
                 )
@@ -194,13 +191,13 @@ class ShortTermGUI(tk.Tk):
             elif topTrackCount == 9:
                 
                 forwardButton = tk.Label(
-                    text='>',
+                    text='Next >',
                     bg='black',
                     fg='white'
                 )
                 forwardButton.grid(
                     row=0,
-                    column=3
+                    column=1
                 )
                 forwardButton.bind(
                     "<Button-1>",
@@ -210,13 +207,13 @@ class ShortTermGUI(tk.Tk):
             else:
                 
                 forwardButton = tk.Label(
-                    text='>',
+                    text='Next >',
                     bg='black',
                     fg='white'
                 )
                 forwardButton.grid(
                     row=0,
-                    column=3
+                    column=1
                 )
                 forwardButton.bind(
                     "<Button-1>",
@@ -224,7 +221,7 @@ class ShortTermGUI(tk.Tk):
                 )
 
                 backButton = tk.Label(
-                    text="<",
+                    text="< Back",
                     bg='black',
                     fg='white',
                 )
@@ -246,7 +243,7 @@ class ShortTermGUI(tk.Tk):
             )
             firstLabel.grid(
                 row=1,
-                column=1
+                column=0
             )
 
             secondLabel = tk.Label(
@@ -258,7 +255,7 @@ class ShortTermGUI(tk.Tk):
             )
             secondLabel.grid(
                 row=1,
-                column=2
+                column=1
             )
 
             thirdLabel = tk.Label(
@@ -270,7 +267,7 @@ class ShortTermGUI(tk.Tk):
             )
             thirdLabel.grid(
                 row=2,
-                column=1
+                column=0
             )
 
             fourthLabel = tk.Label(
@@ -282,7 +279,7 @@ class ShortTermGUI(tk.Tk):
             )
             fourthLabel.grid(
                 row=2,
-                column=2
+                column=1
             )            
 
             fifthLabel = tk.Label(
@@ -294,7 +291,7 @@ class ShortTermGUI(tk.Tk):
             )
             fifthLabel.grid(
                 row=3,
-                column=1
+                column=0
             )
 
             sixthLabel = tk.Label(
@@ -306,7 +303,7 @@ class ShortTermGUI(tk.Tk):
             )
             sixthLabel.grid(
                 row=3,
-                column=2
+                column=1
             )
 
             seventhLabel = tk.Label(
@@ -318,7 +315,7 @@ class ShortTermGUI(tk.Tk):
             )
             seventhLabel.grid(
                 row=4,
-                column=1
+                column=0
             )
 
             eighthLabel = tk.Label(
@@ -330,7 +327,7 @@ class ShortTermGUI(tk.Tk):
             )
             eighthLabel.grid(
                 row=4,
-                column=2
+                column=1
             )
 
             ninthLabel = tk.Label(
@@ -342,7 +339,7 @@ class ShortTermGUI(tk.Tk):
             )
             ninthLabel.grid(
                 row=5,
-                column=1
+                column=0
             )
 
             tenthLabel = tk.Label(
@@ -354,7 +351,610 @@ class ShortTermGUI(tk.Tk):
             )
             tenthLabel.grid(
                 row=5,
-                column=2
+                column=1
+            )
+
+        nextPage()        
+        showPage()
+
+class MediumTermGUI(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        
+        self.windowWidth = 800
+        self.windowHeight = 600
+
+        widthDisplacement = ScreenCalculations.widthCalc(self)
+        heightDisplacement = ScreenCalculations.heightCalc(self)
+
+        self.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}")
+        self.resizable(False, False)
+        self.configure(
+            background="#8edcaa",
+        )
+        self.title("Medium Term Top Tracks")
+
+        for rowAmount in range(6):
+            self.rowconfigure(rowAmount, weight=1)
+        
+        for columnAmount in range(2):
+            self.columnconfigure(columnAmount, weight=1)
+
+        self.cfgfile = 'tekore.cfg'
+        self.conf = tekore.config_from_file(self.cfgfile, return_refresh=True)
+        self.token = tekore.refresh_user_token(*self.conf[:2], self.conf[3])    
+        self.spotify = tekore.Spotify(self.token)
+
+        topTracks = self.spotify.current_user_top_tracks(time_range = 'medium_term', limit=50)
+        topTracksNameList = []
+        topTracksArtistList = []
+        topTracksIDList = []
+        topTracksImageList = []
+        for track in topTracks.items:
+            topTracksNameList.append(track.name)
+            topTracksArtistList.append(track.artists[0].name)
+            topTracksIDList.append(track.id)
+            topTracksImageList.append(track.album.images[0].url)
+
+        global topTrackCount
+        topTrackCount = -1
+
+        def nextPage():
+            
+            global topTrackCount
+            topTrackCount += 10
+
+            global tempNameList
+            global tempArtistList
+            global tempIDList
+            global tempImageList
+
+            tempNameList = []
+            tempArtistList = []
+            tempIDList = []
+            tempImageList = []
+
+            for i in range(topTrackCount - 9, topTrackCount + 1):
+                tempNameList.append(topTracksNameList[i])
+                tempArtistList.append(topTracksArtistList[i])
+                tempIDList.append(topTracksIDList[i])
+                
+                URL = topTracksImageList[i]
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((50,50), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)                
+                
+                tempImageList.append(photo)
+
+        def previousPage():
+            
+            global topTrackCount
+            topTrackCount -= 10
+
+            global tempNameList
+            global tempArtistList
+            global tempIDList
+            global tempImageList
+
+            tempNameList = []
+            tempArtistList = []
+            tempIDList = []
+            tempImageList = []
+
+            for i in range(topTrackCount - 9, topTrackCount + 1):
+                tempNameList.append(topTracksNameList[i])
+                tempArtistList.append(topTracksArtistList[i])
+                tempIDList.append(topTracksIDList[i])
+                
+                URL = topTracksImageList[i]
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((50,50), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)                
+                
+                tempImageList.append(photo)
+
+        def showPage():
+
+            def forwardCallback(event):
+                nextPage()
+                for widget in self.winfo_children():
+                    widget.destroy()
+                showPage()
+
+            def backCallback(event):
+                previousPage()
+                for widget in self.winfo_children():
+                    widget.destroy()
+                showPage()
+
+            if topTrackCount == 49:
+
+                backButton = tk.Label(
+                    text="< Back",
+                    bg='black',
+                    fg='white',
+                )
+                backButton.grid(
+                    row=0,
+                    column=0
+                )
+                backButton.bind(
+                    "<Button-1>",
+                    backCallback
+                )
+
+            elif topTrackCount == 9:
+                
+                forwardButton = tk.Label(
+                    text='Next >',
+                    bg='black',
+                    fg='white'
+                )
+                forwardButton.grid(
+                    row=0,
+                    column=1
+                )
+                forwardButton.bind(
+                    "<Button-1>",
+                    forwardCallback
+                )
+            
+            else:
+                
+                forwardButton = tk.Label(
+                    text='Next >',
+                    bg='black',
+                    fg='white'
+                )
+                forwardButton.grid(
+                    row=0,
+                    column=1
+                )
+                forwardButton.bind(
+                    "<Button-1>",
+                    forwardCallback
+                )
+
+                backButton = tk.Label(
+                    text="< Back",
+                    bg='black',
+                    fg='white',
+                )
+                backButton.grid(
+                    row=0,
+                    column=0
+                )
+                backButton.bind(
+                    "<Button-1>",
+                    backCallback
+                )
+
+            firstLabel = tk.Label(
+                image=tempImageList[0],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-8} - '{tempNameList[0]}'\n{tempArtistList[0]}",
+                compound="right"
+            )
+            firstLabel.grid(
+                row=1,
+                column=0
+            )
+
+            secondLabel = tk.Label(
+                image=tempImageList[1],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-7} - '{tempNameList[1]}'\n{tempArtistList[1]}",
+                compound="right"
+            )
+            secondLabel.grid(
+                row=1,
+                column=1
+            )
+
+            thirdLabel = tk.Label(
+                image=tempImageList[2],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-6} - '{tempNameList[2]}'\n{tempArtistList[2]}",
+                compound="right"
+            )
+            thirdLabel.grid(
+                row=2,
+                column=0
+            )
+
+            fourthLabel = tk.Label(
+                image=tempImageList[3],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-5} - '{tempNameList[3]}'\n{tempArtistList[3]}",
+                compound="right"
+            )
+            fourthLabel.grid(
+                row=2,
+                column=1
+            )            
+
+            fifthLabel = tk.Label(
+                image=tempImageList[4],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-4} - '{tempNameList[4]}'\n{tempArtistList[4]}",
+                compound="right"
+            )
+            fifthLabel.grid(
+                row=3,
+                column=0
+            )
+
+            sixthLabel = tk.Label(
+                image=tempImageList[0],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-3} - '{tempNameList[5]}'\n{tempArtistList[5]}",
+                compound="right"
+            )
+            sixthLabel.grid(
+                row=3,
+                column=1
+            )
+
+            seventhLabel = tk.Label(
+                image=tempImageList[6],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-2} - '{tempNameList[6]}'\n{tempArtistList[6]}",
+                compound="right"
+            )
+            seventhLabel.grid(
+                row=4,
+                column=0
+            )
+
+            eighthLabel = tk.Label(
+                image=tempImageList[7],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-1} - '{tempNameList[7]}'\n{tempArtistList[7]}",
+                compound="right"
+            )
+            eighthLabel.grid(
+                row=4,
+                column=1
+            )
+
+            ninthLabel = tk.Label(
+                image=tempImageList[8],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount} - '{tempNameList[8]}'\n{tempArtistList[8]}",
+                compound="right"
+            )
+            ninthLabel.grid(
+                row=5,
+                column=0
+            )
+
+            tenthLabel = tk.Label(
+                image=tempImageList[9],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount+1} - '{tempNameList[9]}'\n{tempArtistList[9]}",
+                compound="right"
+            )
+            tenthLabel.grid(
+                row=5,
+                column=1
+            )
+
+        nextPage()        
+        showPage()
+
+class ShortTermGUI(tk.Tk):
+
+    def __init__(self):
+        super().__init__()
+        
+        self.windowWidth = 800
+        self.windowHeight = 600
+
+        widthDisplacement = ScreenCalculations.widthCalc(self)
+        heightDisplacement = ScreenCalculations.heightCalc(self)
+
+        self.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}")
+        self.resizable(False, False)
+        self.configure(
+            background="#8edcaa",
+        )
+        self.title("Short Term Top Tracks")
+
+        for rowAmount in range(6):
+            self.rowconfigure(rowAmount, weight=1)
+        
+        for columnAmount in range(2):
+            self.columnconfigure(columnAmount, weight=1)
+
+        self.cfgfile = 'tekore.cfg'
+        self.conf = tekore.config_from_file(self.cfgfile, return_refresh=True)
+        self.token = tekore.refresh_user_token(*self.conf[:2], self.conf[3])    
+        self.spotify = tekore.Spotify(self.token)
+
+        topTracks = self.spotify.current_user_top_tracks(time_range = 'short_term', limit=50)
+        topTracksNameList = []
+        topTracksArtistList = []
+        topTracksIDList = []
+        topTracksImageList = []
+        for track in topTracks.items:
+            topTracksNameList.append(track.name)
+            topTracksArtistList.append(track.artists[0].name)
+            topTracksIDList.append(track.id)
+            topTracksImageList.append(track.album.images[0].url)
+
+        global topTrackCount
+        topTrackCount = -1
+
+        def nextPage():
+            
+            global topTrackCount
+            topTrackCount += 10
+
+            global tempNameList
+            global tempArtistList
+            global tempIDList
+            global tempImageList
+
+            tempNameList = []
+            tempArtistList = []
+            tempIDList = []
+            tempImageList = []
+
+            for i in range(topTrackCount - 9, topTrackCount + 1):
+                tempNameList.append(topTracksNameList[i])
+                tempArtistList.append(topTracksArtistList[i])
+                tempIDList.append(topTracksIDList[i])
+                
+                URL = topTracksImageList[i]
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((50,50), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)                
+                
+                tempImageList.append(photo)
+
+        def previousPage():
+            
+            global topTrackCount
+            topTrackCount -= 10
+
+            global tempNameList
+            global tempArtistList
+            global tempIDList
+            global tempImageList
+
+            tempNameList = []
+            tempArtistList = []
+            tempIDList = []
+            tempImageList = []
+
+            for i in range(topTrackCount - 9, topTrackCount + 1):
+                tempNameList.append(topTracksNameList[i])
+                tempArtistList.append(topTracksArtistList[i])
+                tempIDList.append(topTracksIDList[i])
+                
+                URL = topTracksImageList[i]
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((50,50), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)                
+                
+                tempImageList.append(photo)
+
+        def showPage():
+
+            def forwardCallback(event):
+                nextPage()
+                for widget in self.winfo_children():
+                    widget.destroy()
+                showPage()
+
+            def backCallback(event):
+                previousPage()
+                for widget in self.winfo_children():
+                    widget.destroy()
+                showPage()
+
+            if topTrackCount == 49:
+
+                backButton = tk.Label(
+                    text="< Back",
+                    bg='black',
+                    fg='white',
+                )
+                backButton.grid(
+                    row=0,
+                    column=0
+                )
+                backButton.bind(
+                    "<Button-1>",
+                    backCallback
+                )
+
+            elif topTrackCount == 9:
+                
+                forwardButton = tk.Label(
+                    text='Next >',
+                    bg='black',
+                    fg='white'
+                )
+                forwardButton.grid(
+                    row=0,
+                    column=1
+                )
+                forwardButton.bind(
+                    "<Button-1>",
+                    forwardCallback
+                )
+            
+            else:
+                
+                forwardButton = tk.Label(
+                    text='Next >',
+                    bg='black',
+                    fg='white'
+                )
+                forwardButton.grid(
+                    row=0,
+                    column=1
+                )
+                forwardButton.bind(
+                    "<Button-1>",
+                    forwardCallback
+                )
+
+                backButton = tk.Label(
+                    text="< Back",
+                    bg='black',
+                    fg='white',
+                )
+                backButton.grid(
+                    row=0,
+                    column=0
+                )
+                backButton.bind(
+                    "<Button-1>",
+                    backCallback
+                )
+
+            firstLabel = tk.Label(
+                image=tempImageList[0],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-8} - '{tempNameList[0]}'\n{tempArtistList[0]}",
+                compound="right"
+            )
+            firstLabel.grid(
+                row=1,
+                column=0
+            )
+
+            secondLabel = tk.Label(
+                image=tempImageList[1],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-7} - '{tempNameList[1]}'\n{tempArtistList[1]}",
+                compound="right"
+            )
+            secondLabel.grid(
+                row=1,
+                column=1
+            )
+
+            thirdLabel = tk.Label(
+                image=tempImageList[2],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-6} - '{tempNameList[2]}'\n{tempArtistList[2]}",
+                compound="right"
+            )
+            thirdLabel.grid(
+                row=2,
+                column=0
+            )
+
+            fourthLabel = tk.Label(
+                image=tempImageList[3],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-5} - '{tempNameList[3]}'\n{tempArtistList[3]}",
+                compound="right"
+            )
+            fourthLabel.grid(
+                row=2,
+                column=1
+            )            
+
+            fifthLabel = tk.Label(
+                image=tempImageList[4],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-4} - '{tempNameList[4]}'\n{tempArtistList[4]}",
+                compound="right"
+            )
+            fifthLabel.grid(
+                row=3,
+                column=0
+            )
+
+            sixthLabel = tk.Label(
+                image=tempImageList[0],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-3} - '{tempNameList[5]}'\n{tempArtistList[5]}",
+                compound="right"
+            )
+            sixthLabel.grid(
+                row=3,
+                column=1
+            )
+
+            seventhLabel = tk.Label(
+                image=tempImageList[6],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-2} - '{tempNameList[6]}'\n{tempArtistList[6]}",
+                compound="right"
+            )
+            seventhLabel.grid(
+                row=4,
+                column=0
+            )
+
+            eighthLabel = tk.Label(
+                image=tempImageList[7],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount-1} - '{tempNameList[7]}'\n{tempArtistList[7]}",
+                compound="right"
+            )
+            eighthLabel.grid(
+                row=4,
+                column=1
+            )
+
+            ninthLabel = tk.Label(
+                image=tempImageList[8],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount} - '{tempNameList[8]}'\n{tempArtistList[8]}",
+                compound="right"
+            )
+            ninthLabel.grid(
+                row=5,
+                column=0
+            )
+
+            tenthLabel = tk.Label(
+                image=tempImageList[9],
+                background="black", 
+                foreground="white", 
+                text=f"{topTrackCount+1} - '{tempNameList[9]}'\n{tempArtistList[9]}",
+                compound="right"
+            )
+            tenthLabel.grid(
+                row=5,
+                column=1
             )
 
         nextPage()        
@@ -370,6 +970,14 @@ class TopTracksChoiceGUI(ParentGUI):
         def shortTermCallback(event):
             self.destroy()
             ShortTermGUI()
+
+        def mediumTermCallback(event):
+            self.destroy()
+            MediumTermGUI()
+
+        def longTermCallback(event):
+            self.destroy()
+            LongTermGUI()
 
         shortTermButton = tk.Label(
             text="Short-term (4 weeks)",
@@ -398,6 +1006,10 @@ class TopTracksChoiceGUI(ParentGUI):
             relwidth=0.3,
             relheight=0.1
         )
+        mediumTermButton.bind(
+            "<Button-1>",
+            mediumTermCallback
+        )
         
         longTermButton = tk.Label(
             text="Long-term (All time)",
@@ -409,6 +1021,10 @@ class TopTracksChoiceGUI(ParentGUI):
             rely=0.7,
             relwidth=0.3,
             relheight=0.1
+        )
+        longTermButton.bind(
+            "<Button-1>",
+            longTermCallback
         )
 
 class RecommendationsGUI(ParentGUI):
