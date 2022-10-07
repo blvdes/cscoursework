@@ -89,10 +89,12 @@ class ShortTermGUI(tk.Tk):
         topTracksNameList = []
         topTracksArtistList = []
         topTracksIDList = []
+        topTracksImageList = []
         for track in topTracks.items:
             topTracksNameList.append(track.name)
             topTracksArtistList.append(track.artists[0].name)
             topTracksIDList.append(track.id)
+            topTracksImageList.append(track.album.images[0].url)
 
         global topTrackCount
         topTrackCount = -1
@@ -106,16 +108,16 @@ class ShortTermGUI(tk.Tk):
             global tempNameList
             global tempArtistList
             global tempIDList
+            global tempImageList
             tempNameList = []
             tempArtistList = []
             tempIDList = []
+            tempImageList = []
 
             for i in range(topTrackCount):
                 tempNameList.append(topTracksNameList[i])
                 tempArtistList.append(topTracksArtistList[i])
                 tempIDList.append(topTracksIDList[i])
-
-            return tempNameList, tempArtistList, tempIDList
 
         def previousPage():
             
@@ -126,14 +128,25 @@ class ShortTermGUI(tk.Tk):
             global tempNameList
             global tempArtistList
             global tempIDList
+            global tempImageList
             tempNameList = []
             tempArtistList = []
             tempIDList = []
+            tempImageList = []
 
             for i in range(topTrackCount):
                 tempNameList.append(topTracksNameList[i])
                 tempArtistList.append(topTracksArtistList[i])
                 tempIDList.append(topTracksIDList[i])
+
+        def openImage(URL):
+            u = urlopen(URL)
+            raw_data = u.read()
+            u.close()
+            im = Image.open(BytesIO(raw_data))
+            resized_image= im.resize((300,300), Image.Resampling.LANCZOS)
+            photo = ImageTk.PhotoImage(resized_image)
+            return photo
 
         def showPage():
 
@@ -211,7 +224,8 @@ class ShortTermGUI(tk.Tk):
                     backCallback
                 )
 
-            
+
+
 
         nextPage()        
         showPage()
