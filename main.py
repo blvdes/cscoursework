@@ -11,7 +11,7 @@ import vlc
 import time
 import tkinter as tk
 from tkinter import Button, ttk
-from turtle import width, window_height
+from turtle import back, width, window_height
 from unicodedata import name
 from PIL import Image, ImageTk
 from urllib.request import urlopen
@@ -56,11 +56,29 @@ class ScreenCalculations(ParentGUI):
         heightDisplacement = int(((userScreenHeight - self.windowHeight) / 2) - 24) # -24px for Mac toolbar.
         return heightDisplacement
 
-class ShortTermGUI(ParentGUI):
+class ShortTermGUI(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        
+        self.windowWidth = 600
+        self.windowHeight = 800
+
+        widthDisplacement = ScreenCalculations.widthCalc(self)
+        heightDisplacement = ScreenCalculations.heightCalc(self)
+
+        self.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}")
+        self.resizable(False, False)
+        self.configure(
+            background="#8edcaa",
+        )
         self.title("Short Term Top Tracks")
+
+        for rowAmount in range(6):
+            self.rowconfigure(rowAmount, weight=1)
+        
+        for columnAmount in range(4):
+            self.columnconfigure(columnAmount, weight=1)
 
         self.cfgfile = 'tekore.cfg'
         self.conf = tekore.config_from_file(self.cfgfile, return_refresh=True)
@@ -75,6 +93,128 @@ class ShortTermGUI(ParentGUI):
             topTracksNameList.append(track.name)
             topTracksArtistList.append(track.artists[0].name)
             topTracksIDList.append(track.id)
+
+        global topTrackCount
+        topTrackCount = -1
+
+        def nextPage():
+            
+            global topTrackCount
+            topTrackCount += 10
+            print(topTrackCount)
+
+            global tempNameList
+            global tempArtistList
+            global tempIDList
+            tempNameList = []
+            tempArtistList = []
+            tempIDList = []
+
+            for i in range(topTrackCount):
+                tempNameList.append(topTracksNameList[i])
+                tempArtistList.append(topTracksArtistList[i])
+                tempIDList.append(topTracksIDList[i])
+
+            return tempNameList, tempArtistList, tempIDList
+
+        def previousPage():
+            
+            global topTrackCount
+            topTrackCount -= 10
+            print(topTrackCount)
+
+            global tempNameList
+            global tempArtistList
+            global tempIDList
+            tempNameList = []
+            tempArtistList = []
+            tempIDList = []
+
+            for i in range(topTrackCount):
+                tempNameList.append(topTracksNameList[i])
+                tempArtistList.append(topTracksArtistList[i])
+                tempIDList.append(topTracksIDList[i])
+
+        def showPage():
+
+            def forwardCallback(event):
+                nextPage()
+                for widget in self.winfo_children():
+                    widget.destroy()
+                showPage()
+
+            def backCallback(event):
+                previousPage()
+                for widget in self.winfo_children():
+                    widget.destroy()
+                showPage()
+
+            if topTrackCount == 49:
+
+                backButton = tk.Label(
+                    text="<",
+                    bg='black',
+                    fg='white',
+                )
+                backButton.grid(
+                    row=0,
+                    column=0
+                )
+                backButton.bind(
+                    "<Button-1>",
+                    backCallback
+                )
+
+            elif topTrackCount == 9:
+                
+                forwardButton = tk.Label(
+                    text='>',
+                    bg='black',
+                    fg='white'
+                )
+                forwardButton.grid(
+                    row=0,
+                    column=3
+                )
+                forwardButton.bind(
+                    "<Button-1>",
+                    forwardCallback
+                )
+            
+            else:
+                
+                forwardButton = tk.Label(
+                    text='>',
+                    bg='black',
+                    fg='white'
+                )
+                forwardButton.grid(
+                    row=0,
+                    column=3
+                )
+                forwardButton.bind(
+                    "<Button-1>",
+                    forwardCallback
+                )
+
+                backButton = tk.Label(
+                    text="<",
+                    bg='black',
+                    fg='white',
+                )
+                backButton.grid(
+                    row=0,
+                    column=0
+                )
+                backButton.bind(
+                    "<Button-1>",
+                    backCallback
+                )
+
+            
+
+        nextPage()        
+        showPage()
 
 class TopTracksChoiceGUI(ParentGUI):
     
