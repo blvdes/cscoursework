@@ -1202,6 +1202,10 @@ class RecommendationsGUI(ParentGUI):
                 "<Button-1>",
                 playCallback
             )
+            playButton.bind(
+                "<space>",
+                playCallback
+            )
 
             replayButton = tk.Label(
                 text="🔁",
