@@ -26,8 +26,8 @@ Email: exampleexaminer@gmail.com
 Username: 31cskad4iqej67l4vdl3oeipfh5i
 Password: &kf940%F!ynI
 
-If this account is not used then the program will not be able to run, even if you log in with your personal account.
-If logging in requires email verification, use the same details on GMAIL.
+If this account is not used then the program will not be able to run, even if logged in with a personal Spotify account.
+If logging in requires e-mail verification, use the same details above on Gmail.
 
 RUNNING
 
