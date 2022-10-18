@@ -1033,9 +1033,51 @@ class CurrentlyPlayingGUI(ParentGUI):
         super().__init__()
         self.title("Playback Control")
 
+        self.cfgfile = 'tekore.cfg'
+        self.conf = tekore.config_from_file(self.cfgfile, return_refresh=True)
+        self.token = tekore.refresh_user_token(*self.conf[:2], self.conf[3])    
+        self.spotify = tekore.Spotify(self.token)
 
+        def currentlyPlayingScreen():
+            if self.spotify.playback_currently_playing() == None:
+                nonePlayingLabel = tk.Label(
+                    text="No track recognised!\nPlease restart the app.",
+                    background='black',
+                    foreground='white'
+                )
+                nonePlayingLabel.place(
+                    rely=0.4,
+                    relx=0.35,
+                    relheight=0.2,
+                    relwidth=0.3
+                )
+            else:
+                currentlyPlaying = self.spotify.playback_currently_playing()
+
+                songID = currentlyPlaying.item.id
+                progressTime = currentlyPlaying.progress_ms
+                albumCover = currentlyPlaying.item.album.images[0].url
+
+                URL = albumCover
+                print(URL)
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((300,300), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)
+
+                albumCoverLabel = tk.Label(
+                    image=photo
+                )
+                albumCoverLabel.photo = photo
+                albumCoverLabel.place(
+                    relx=0.25,
+                    rely=0.175,
+                )
+
+        currentlyPlayingScreen()
         self.mainloop()
-
 
 class RecommendationsGUI(ParentGUI):
     
@@ -1280,7 +1322,7 @@ class HomeGUI(ParentGUI):
         
         def playbackControlLabelEvent(event):
             self.destroy()
-            CurrentlyPlayingGUI
+            CurrentlyPlayingGUI()
 
         #Recommendations button.
         recommendationsLabel = tk.Label(
@@ -1319,17 +1361,18 @@ class HomeGUI(ParentGUI):
             text='Playback Control',
             background='black',
             foreground='white'
-        )
-        playbackControlLabel.bind(
-            "<Button-1>",
-            playbackControlLabelEvent
-        )
+        )        
         playbackControlLabel.place(
             relx=0.1,
             rely=0.3,
             relwidth=0.25,
             relheight=0.1
         )
+        playbackControlLabel.bind(
+            "<Button-1>",
+            playbackControlLabelEvent
+        )
+
 
         self.mainloop()
 
