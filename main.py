@@ -1027,6 +1027,16 @@ class TopTracksChoiceGUI(ParentGUI):
             longTermCallback
         )
 
+class CurrentlyPlayingGUI(ParentGUI):
+   
+    def __init__(self):
+        super().__init__()
+        self.title("Playback Control")
+
+
+        self.mainloop()
+
+
 class RecommendationsGUI(ParentGUI):
     
     def __init__(self):
@@ -1267,6 +1277,10 @@ class HomeGUI(ParentGUI):
         def topTracksLabelEvent(event):
             self.destroy()
             TopTracksChoiceGUI()
+        
+        def playbackControlLabelEvent(event):
+            self.destroy()
+            CurrentlyPlayingGUI
 
         #Recommendations button.
         recommendationsLabel = tk.Label(
@@ -1299,6 +1313,22 @@ class HomeGUI(ParentGUI):
         topTracksLabel.bind(
             "<Button-1>",
             topTracksLabelEvent
+        )
+
+        playbackControlLabel = tk.Label(
+            text='Playback Control',
+            background='black',
+            foreground='white'
+        )
+        playbackControlLabel.bind(
+            "<Button-1>",
+            playbackControlLabelEvent
+        )
+        playbackControlLabel.place(
+            relx=0.1,
+            rely=0.3,
+            relwidth=0.25,
+            relheight=0.1
         )
 
         self.mainloop()
