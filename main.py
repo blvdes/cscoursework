@@ -93,7 +93,7 @@ class LongTermGUI(tk.Tk):
             topTracksNameList.append(track.name)
             topTracksArtistList.append(track.artists[0].name)
             topTracksIDList.append(track.id)
-            topTracksImageList.append(track.album.images[0].url)
+            topTracksImageList.append(track.album.images[2].url)
 
         global topTrackCount
         topTrackCount = -1
@@ -394,7 +394,7 @@ class MediumTermGUI(tk.Tk):
             topTracksNameList.append(track.name)
             topTracksArtistList.append(track.artists[0].name)
             topTracksIDList.append(track.id)
-            topTracksImageList.append(track.album.images[0].url)
+            topTracksImageList.append(track.album.images[2].url)
 
         global topTrackCount
         topTrackCount = -1
@@ -696,7 +696,7 @@ class ShortTermGUI(tk.Tk):
             topTracksNameList.append(track.name)
             topTracksArtistList.append(track.artists[0].name)
             topTracksIDList.append(track.id)
-            topTracksImageList.append(track.album.images[0].url)
+            topTracksImageList.append(track.album.images[2].url)
 
         global topTrackCount
         topTrackCount = -1
@@ -1131,9 +1131,11 @@ class RecommendationsGUI(ParentGUI):
             recID = trackRecGet()
             recURIList = []
             recURIList.append(self.spotify.track(track_id=recID).uri)
+            recTrack = self.spotify.track(recID)
+            albumURL = recTrack.album.images[2].url
 
             #Opens URL of album cover, places it middle of grid.
-            URL = f"{self.spotify.track(recID).album.images[0].url}"
+            URL = albumURL
             print(URL)
             u = urlopen(URL)
             raw_data = u.read()
@@ -1143,7 +1145,6 @@ class RecommendationsGUI(ParentGUI):
             photo = ImageTk.PhotoImage(resized_image)
 
             panel = tk.Label(
-                self, 
                 image=photo,
                 background="black", 
                 foreground="white", 
