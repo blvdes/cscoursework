@@ -1076,6 +1076,8 @@ class CurrentlyPlayingGUI(ParentGUI):
                     rely=0.175,
                 )
 
+                
+
         currentlyPlayingScreen()
         self.mainloop()
 
@@ -1359,7 +1361,7 @@ class HomeGUI(ParentGUI):
         )
 
         playbackControlLabel = tk.Label(
-            text='Playback Control',
+            text='Playback (Premium)',
             background='black',
             foreground='white'
         )        
