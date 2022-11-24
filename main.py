@@ -17,6 +17,7 @@ from PIL import Image, ImageTk
 from urllib.request import urlopen
 from io import BytesIO
 from itertools import cycle
+import sqlite3
 
 class Main:
     
@@ -1382,6 +1383,8 @@ class HomeGUI(ParentGUI):
 class Setup:
     
     def __init__(self):
+        databaseConnection = sqlite3.connect('tekoreConfig.db')
+        
         self.redirect_uri = "https://example.com/callback"
         self.client_id = "eb8d88a0f9d143c3b9e234ba69b9516c"
         self.client_secret = "c51987ab9ef745b9a72806ef9ef2cb6b"
