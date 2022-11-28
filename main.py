@@ -575,9 +575,10 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
             recURIList = []
             recURIList.append(self.spotify.track(track_id=recID).uri)
             recTrack = self.spotify.track(recID)
-            albumURL = recTrack.album.images[2].url
+            albumURL = recTrack.album.images[0].url
 
-            #Opens URL of album cover, places it middle of grid.
+            # ^ Appends track URI to list and retrieves album cover URL.
+
             URL = albumURL
             print(URL)
             u = urlopen(URL)
@@ -586,6 +587,8 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
             im = Image.open(BytesIO(raw_data))
             resized_image= im.resize((300,300), Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(resized_image)
+
+            # ^ Opens image URL and reads data for image label creation.
 
             panel = tk.Label(
                 image=photo,
@@ -600,13 +603,15 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
                 row=1
             )
 
+            # ^ Creates and centers image in window with border containing track name and artist.
+
             def playCallback(event):
-                playerCheck = media_player.is_playing()
+                playerCheck = media_player.is_playing() # Returns 0 or 1 if preview is paused or playing.
 
                 if playerCheck == 0:
-                    media_player.play()
+                    media_player.play() # Plays track preview.
                 else:
-                    media_player.set_pause(1)
+                    media_player.set_pause(1) # Pauses track preview.
                 
             def replayCallback(event):
                 media_player.pause()
