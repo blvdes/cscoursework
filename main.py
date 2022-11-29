@@ -609,34 +609,36 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
                 playerCheck = media_player.is_playing() # Returns 0 or 1 if preview is paused or playing.
 
                 if playerCheck == 0:
-                    media_player.play() # Plays track preview.
+                    media_player.play() # Plays track preview using VLC.
                 else:
-                    media_player.set_pause(1) # Pauses track preview.
+                    media_player.set_pause(1) # Pauses track preview using VLC.
                 
             def replayCallback(event):
                 media_player.pause()
                 media_player.set_media(media)
                 media_player.play()
 
-            def yesCallback(event): #Adds recommendation to app curated playlist, goes to next recommendation.
+                # ^ Pauses then refreshes media in VLC to replay preview.
+
+            def yesCallback(event): # Adds recommendation to app curated playlist, goes to next recommendation.
                 self.spotify.playlist_add(playlist_id=playlistID, uris=recURIList)
 
                 for widget in self.winfo_children():
-                    widget.destroy()
+                    widget.destroy() # Clears GUI to move onto next recommendation.
                 
-                media_player.set_pause(1)
-                recScreen()
+                media_player.set_pause(1) # Pauses preview to move onto next recommendation.
+                recScreen() # Generates next screen.
             
-            def noCallback(event): #**EDIT THIS**
-                print('no code needed\n')
-                
+            def noCallback(event):
                 for widget in self.winfo_children():
                     widget.destroy()
                 
                 media_player.set_pause(1)
                 recScreen()
 
-            #'Yes' button for song recommendation.
+                # ^ Clears GUI and skip to next recommendation without modifying playlists.
+
+            # 'Add' button for song recommendation.
             greenButton = tk.Label(
                     text=">",
                     padx=20,
@@ -653,7 +655,7 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
                 yesCallback
             )
 
-            #'No' button for song recommendation.
+            # 'Skip' button for song recommendation.
             redButton = tk.Label(
                 text="<",
                 padx=20,
@@ -670,10 +672,10 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
                 noCallback
             )
             
-            trackPreviewURL = self.spotify.track(track_id=recID).preview_url
-            media_player = vlc.MediaPlayer()
-            try:
-                media = vlc.Media(trackPreviewURL)
+            trackPreviewURL = self.spotify.track(track_id=recID).preview_url # Retrieves audio file URL for VLC.
+            media_player = vlc.MediaPlayer() # Creates VLC player.
+            try: # Exception to prevent no preview URL error, and displays message to user.
+                media = vlc.Media(trackPreviewURL) 
             except TypeError:
                 noPreviewButton = tk.Label(
                     text="No preview available, sorry!",
@@ -686,7 +688,8 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
                     row=2,
                     column=1
                 )
-            media_player.set_media(media)
+                # ^ 'No preview' dialogue box creation and placing.
+            media_player.set_media(media) # Sets VLC media to player to listen to preview.
 
             playButton = tk.Label(
                 text="⏯️",
@@ -707,6 +710,7 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
                 "<space>",
                 playCallback
             )
+            # ^ Preview play button creation and placing.
 
             replayButton = tk.Label(
                 text="🔁",
@@ -723,6 +727,7 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
                 "<Button-1>",
                 replayCallback
             )
+            # ^ Preview replay button creation and placing.
 
             menubar = tk.Menu(self)
             self.config(menu=menubar)
@@ -752,28 +757,29 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
                 underline=0
             )
 
-        recScreen()
+            # ^ Menubar creation (WINDOWS ONLY)
+
+        recScreen() # Initial recommendation screen.
         self.mainloop()
         
 class HomeGUI(ParentGUI):
     
     def __init__(self): #GUI creation and config.
         super().__init__()
-        self.title("Spotipython Home")
+        self.title("Spotipython Home") # Changes title.
 
-        def recommendationsLabelEvent(event): #Switches window to recommendations GUI.
-            self.destroy()
+        def recommendationsLabelEvent(event): # Switches window to recommendations GUI.
+            self.destroy() # Clears old GUI.
             RecommendationsGUI()
 
-        def topTracksLabelEvent(event):
-            self.destroy()
+        def topTracksLabelEvent(event): # Switches window to top track term choice GUI.
+            self.destroy() # Clears old GUI.
             TopTracksChoiceGUI()
         
-        def playbackControlLabelEvent(event):
-            self.destroy()
+        def playbackControlLabelEvent(event): # Switches window to playback control GUI.
+            self.destroy() # Clears old GUI.
             CurrentlyPlayingGUI()
 
-        #Recommendations button.
         recommendationsLabel = tk.Label(
             text='Recommendations',
             background='black',
@@ -789,6 +795,7 @@ class HomeGUI(ParentGUI):
             relwidth=0.25,
             relheight=0.1
         )
+        # ^ Recommendations button creation, binding and relative placing.
         
         topTracksLabel = tk.Label(
             text='Top Tracks',
@@ -805,6 +812,7 @@ class HomeGUI(ParentGUI):
             "<Button-1>",
             topTracksLabelEvent
         )
+        # ^ Top Tracks button creation, binding and relative placing.
 
         playbackControlLabel = tk.Label(
             text='Playback (Premium)',
@@ -821,23 +829,24 @@ class HomeGUI(ParentGUI):
             "<Button-1>",
             playbackControlLabelEvent
         )
-
+        # ^ Playback Control button creation, binding and relative placing.
 
         self.mainloop()
 
 class Setup:
     
     def __init__(self):
-        databaseConnection = sqlite3.connect('tekoreConfig.db')
+        databaseConnection = sqlite3.connect('tekoreConfig.db') # DATABASE WIP*****
         
         self.redirect_uri = "https://example.com/callback"
         self.client_id = "eb8d88a0f9d143c3b9e234ba69b9516c"
         self.client_secret = "c51987ab9ef745b9a72806ef9ef2cb6b"
-        self.refreshToken = False
-        self.configExists = exists('tekore.cfg')
+
+        self.refreshToken = False # Makes sure token is refreshed on every launch.
+        self.configExists = exists('tekore.cfg') # Checks if config file exists.
         self.spotify = ''
 
-        self.setupFunction()
+        self.setupFunction() 
     
     def spotifyOAuth(self, token):
         self.spotify = tekore.Spotify(token)
@@ -857,12 +866,12 @@ class Setup:
     
     def setupFunction(self):
         if self.configExists == True: 
-            try:
-                #Assigns client details to config.
+            try: # Exception to determine if refresh token is not out-of-date using BadRequest errors.
+                # Assigns client details to config.
                 conf = (self.client_id, self.client_secret, self.redirect_uri)
                 file = 'tekore.cfg'
 
-                #Gets refresh token from config file to then authenticate user.
+                # Gets refresh token from config file to then authenticate user.
                 conf = tekore.config_from_file(file, return_refresh=True)
                 token = tekore.refresh_user_token(*conf[:2], conf[3])    
                 refreshToken = True
@@ -872,12 +881,12 @@ class Setup:
             except tekore.BadRequest:
                 self.setupConfigFile(False)
         else:
-            self.setupConfigFile(False)
+            self.setupConfigFile(False) # Skips straight to browser authentication if config file does not exist.
 
 #Runs program.
 def instance():
-    thisInstance = Main()
-    print('Program terminated.')
+    thisInstance = Main() # Runs program.
+    print('Program terminated.') # Displays if program closes.
 
 if __name__ == '__main__':
-    instance()
+    instance() # Creates instance of program.
