@@ -854,19 +854,48 @@ class Setup():
         databaseCursor = databaseConnection.cursor()
         
         def shortTermTopTracksTable():
-            databaseCursor.execute("""CREATE TABLE IF NOT EXISTS shorttoptracks (id INTEGER AUTO INCREMENT PRIMARY KEY, name TEXT, artist TEXT, trackid TEXT, imageurl TEXT)""")
-            databaseCursor.execute("""DELETE FROM shorttoptracks""")
+            databaseCursor.execute("""DROP TABLE IF EXISTS shorttoptracks""")
+            databaseConnection.commit()
+            databaseCursor.execute("""CREATE TABLE IF NOT EXISTS shorttoptracks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, artist TEXT, trackid TEXT, imageurl TEXT)""")
+            databaseConnection.commit()
             
             userTopTracks = self.spotify.current_user_top_tracks(time_range = 'short_term', limit=50)
 
             for track in userTopTracks.items:
                 databaseCursor.execute("""INSERT INTO shorttoptracks (name, artist, trackid, imageurl) VALUES (?, ?, ?, ?)""", (track.name, track.artists[0].name, track.id, track.album.images[2].url))
+                databaseConnection.commit()
         
-        shortTermTopTracksTable()
+        def mediumTermTopTracksTable():
+            databaseCursor.execute("""DROP TABLE IF EXISTS mediumtoptracks""")
+            databaseConnection.commit()
+            databaseCursor.execute("""CREATE TABLE IF NOT EXISTS mediumtoptracks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, artist TEXT, trackid TEXT, imageurl TEXT)""")
+            databaseConnection.commit()
+            
+            userTopTracks = self.spotify.current_user_top_tracks(time_range = 'medium_term', limit=50)
 
-        databaseConnection.commit()
+            for track in userTopTracks.items:
+                databaseCursor.execute("""INSERT INTO mediumtoptracks (name, artist, trackid, imageurl) VALUES (?, ?, ?, ?)""", (track.name, track.artists[0].name, track.id, track.album.images[2].url))
+                databaseConnection.commit()
+
+        def longTermTopTracksTable():
+            databaseCursor.execute("""DROP TABLE IF EXISTS longtoptracks""")
+            databaseConnection.commit()
+            databaseCursor.execute("""CREATE TABLE IF NOT EXISTS longtoptracks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, artist TEXT, trackid TEXT, imageurl TEXT)""")
+            databaseConnection.commit()
+            
+            userTopTracks = self.spotify.current_user_top_tracks(time_range = 'long_term', limit=50)
+
+            for track in userTopTracks.items:
+                databaseCursor.execute("""INSERT INTO longtoptracks (name, artist, trackid, imageurl) VALUES (?, ?, ?, ?)""", (track.name, track.artists[0].name, track.id, track.album.images[2].url))
+                databaseConnection.commit()
+
+        longTermTopTracksTable()
+        mediumTermTopTracksTable()
+        shortTermTopTracksTable()
         print(databaseConnection.total_changes)
         return
+    
+
     
     def spotifyOAuth(self, token):
         self.spotify = tekore.Spotify(token)

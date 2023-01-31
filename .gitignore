@@ -2,3 +2,4 @@
 *.cfg
 .DS_Store
 *.db
+test files/sql tests.py
