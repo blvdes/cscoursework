@@ -600,7 +600,7 @@ class RecommendationsGUI(ParentGUI): # Displays song recommendation GUI.
             panel.photo = photo
             panel.grid(
                 column=1,
-                row=1
+                row=1,
             )
 
             # ^ Creates and centers image in window with border containing track name and artist.
@@ -833,11 +833,10 @@ class HomeGUI(ParentGUI):
 
         self.mainloop()
 
-class Setup:
+class Setup():
     
     def __init__(self):
-        databaseConnection = sqlite3.connect('tekoreConfig.db') # DATABASE WIP*****
-        
+
         self.redirect_uri = "https://example.com/callback"
         self.client_id = "eb8d88a0f9d143c3b9e234ba69b9516c"
         self.client_secret = "c51987ab9ef745b9a72806ef9ef2cb6b"
@@ -846,11 +845,32 @@ class Setup:
         self.configExists = exists('tekore.cfg') # Checks if config file exists.
         self.spotify = ''
 
-        self.setupFunction() 
+        self.setupFunction()
+
+    def mainDatabase(self, token):
+        self.spotify = tekore.Spotify(token)
+        
+        databaseConnection = sqlite3.connect('userRequests.db')
+        databaseCursor = databaseConnection.cursor()
+        
+        def shortTermTopTracksTable():
+            databaseCursor.execute("""CREATE TABLE IF NOT EXISTS shorttoptracks (id INTEGER AUTO INCREMENT PRIMARY KEY, name TEXT, artist TEXT, trackid TEXT, imageurl TEXT)""")
+            databaseCursor.execute("""DELETE FROM shorttoptracks""")
+            
+            userTopTracks = self.spotify.current_user_top_tracks(time_range = 'short_term', limit=50)
+
+            for track in userTopTracks.items:
+                databaseCursor.execute("""INSERT INTO shorttoptracks (name, artist, trackid, imageurl) VALUES (?, ?, ?, ?)""", (track.name, track.artists[0].name, track.id, track.album.images[2].url))
+        
+        shortTermTopTracksTable()
+
+        databaseConnection.commit()
+        print(databaseConnection.total_changes)
+        return
     
     def spotifyOAuth(self, token):
         self.spotify = tekore.Spotify(token)
-        return self.spotify
+        self.mainDatabase(token)
 
     def setupConfigFile(self, refreshToken):
         if refreshToken == False and self.configExists == False:
