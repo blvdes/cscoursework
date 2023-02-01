@@ -59,6 +59,294 @@ class ScreenCalculations(ParentGUI): # Window geometry calculations.
         heightDisplacement = int(((userScreenHeight - self.windowHeight) / 2) - 24) # Calculates x-axis displacement (-24px for Mac toolbar). 
         return heightDisplacement
 
+class TopTracks(tk.Tk):
+    def __init__(self, termChoice):
+        super().__init__()
+
+        self.termChoice = termChoice
+        self.trackCounter = 0
+
+        self.windowWidth = 800
+        self.windowHeight = 600 # Changes window dimensions to 800x600.
+
+        widthDisplacement = ScreenCalculations.widthCalc(self)
+        heightDisplacement = ScreenCalculations.heightCalc(self) # Retrieves window calculations from ScreenCalculations class.
+
+        self.geometry(f"{self.windowWidth}x{self.windowHeight}+{widthDisplacement}+{heightDisplacement}") # Centers window on screen.
+        self.resizable(False, False) # Disables resizable windows.
+        self.configure(
+            background="#8edcaa", # Changes backround colour to light green (#8edcaa).
+        )
+        self.title("Long Term Top Tracks") # Changes window title.
+
+        for rowAmount in range(6):
+            self.rowconfigure(rowAmount, weight=1) 
+        
+        for columnAmount in range(2):
+            self.columnconfigure(columnAmount, weight=1)
+
+        databaseConnection = sqlite3.connect('userRequests.db')
+        databaseCursor = databaseConnection.cursor()
+
+        if termChoice == 'short_term':
+            selectQuery = """SELECT * FROM shorttoptracks"""
+        elif termChoice == 'medium_term':
+            selectQuery = """SELECT * FROM mediumtoptracks"""
+        else:
+            selectQuery = """SELECT * FROM longtoptracks"""
+
+        databaseCursor.execute(selectQuery)
+        trackArray = databaseCursor.fetchall()
+
+        databaseCursor.close()
+        databaseConnection.close()
+        
+        def nextPage(self): # Displays next 10 results.
+            self.trackCounter += 10
+            global tempImageList
+            tempImageList = []
+
+            for i in range(self.trackCounter - 10, self.trackCounter):
+                URL = trackArray[i][4]
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((50,50), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)
+
+                tempImageList.append(photo)
+                
+                # ^ Opens image URL and reads data for image label creation, then appends to temporary list.           
+
+        def previousPage(self): # Displays previous 10 results.
+            self.trackCounter -= 10
+            global tempImageList
+            tempImageList = []
+
+            for i in range(self.trackCounter - 10, self.trackCounter):
+
+                # ^ Appends all track details to temporary lists for object creation.
+                
+                URL = trackArray[i][4]
+                u = urlopen(URL)
+                raw_data = u.read()
+                u.close()
+                im = Image.open(BytesIO(raw_data))
+                resized_image= im.resize((50,50), Image.Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized_image)                
+                
+                tempImageList.append(photo)
+
+                # ^ Opens image URL and reads data for image label creation, then appends to temporary list.         
+
+        def showPage(self): # GUI to display 10 tracks at a time, including all details and image for each track.
+
+            def forwardCallback(event):
+                nextPage(self)
+                for widget in self.winfo_children():
+                    widget.destroy()
+                showPage(self)
+            
+            # ^ Clears GUI for next 10 results.
+
+            def backCallback(event):
+                previousPage(self)
+                for widget in self.winfo_children():
+                    widget.destroy()
+                showPage(self)
+            
+            # ^ Clears GUI for previous 10 results.
+
+            if self.trackCounter == 50: # Removes the next page button if at the end of the 50 tracks.
+
+                backButton = tk.Label(
+                    text="< Back",
+                    bg='black',
+                    fg='white',
+                )
+                backButton.grid(
+                    row=0,
+                    column=0
+                )
+                backButton.bind(
+                    "<Button-1>",
+                    backCallback
+                )
+
+            elif self.trackCounter == 10: # Removes the previous page button if at the end of the 50 tracks.
+                
+                forwardButton = tk.Label(
+                    text='Next >',
+                    bg='black',
+                    fg='white'
+                )
+                forwardButton.grid(
+                    row=0,
+                    column=1
+                )
+                forwardButton.bind(
+                    "<Button-1>",
+                    forwardCallback
+                )
+            
+            else:  # Both next and previous page buttons available.
+                
+                forwardButton = tk.Label(
+                    text='Next >',
+                    bg='black',
+                    fg='white'
+                )
+                forwardButton.grid(
+                    row=0,
+                    column=1
+                )
+                forwardButton.bind(
+                    "<Button-1>",
+                    forwardCallback
+                )
+
+                backButton = tk.Label(
+                    text="< Back",
+                    bg='black',
+                    fg='white',
+                )
+                backButton.grid(
+                    row=0,
+                    column=0
+                )
+                backButton.bind(
+                    "<Button-1>",
+                    backCallback
+                )
+
+            firstLabel = tk.Label(
+                image=tempImageList[0],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 9} - '{trackArray[self.trackCounter - 10][1]}'\n{trackArray[self.trackCounter - 10][2]}",
+                compound="right"
+            )
+            firstLabel.grid(
+                row=1,
+                column=0
+            )
+
+            secondLabel = tk.Label(
+                image=tempImageList[1],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 8} - '{trackArray[self.trackCounter - 9][1]}'\n{trackArray[self.trackCounter - 9][2]}",
+                compound="right"
+            )
+            secondLabel.grid(
+                row=1,
+                column=1
+            )
+
+            thirdLabel = tk.Label(
+                image=tempImageList[2],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 7} - '{trackArray[self.trackCounter - 8][1]}'\n{trackArray[self.trackCounter - 8][2]}",
+                compound="right"
+            )
+            thirdLabel.grid(
+                row=2,
+                column=0
+            )
+
+            fourthLabel = tk.Label(
+                image=tempImageList[3],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 6} - '{trackArray[self.trackCounter - 7][1]}'\n{trackArray[self.trackCounter - 7][2]}",
+                compound="right"
+            )
+            fourthLabel.grid(
+                row=2,
+                column=1
+            )
+
+            fifthLabel = tk.Label(
+                image=tempImageList[4],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 5} - '{trackArray[self.trackCounter - 6][1]}'\n{trackArray[self.trackCounter - 6][2]}",
+                compound="right"
+            )
+            fifthLabel.grid(
+                row=3,
+                column=0
+            )
+
+            sixthLabel = tk.Label(
+                image=tempImageList[5],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 4} - '{trackArray[self.trackCounter - 5][1]}'\n{trackArray[self.trackCounter - 5][2]}",
+                compound="right"
+            )
+            sixthLabel.grid(
+                row=3,
+                column=1
+            )
+
+            seventhLabel = tk.Label(
+                image=tempImageList[6],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 3} - '{trackArray[self.trackCounter - 4][1]}'\n{trackArray[self.trackCounter - 4][2]}",
+                compound="right"
+            )
+            seventhLabel.grid(
+                row=4,
+                column=0
+            )
+
+            eighthLabel = tk.Label(
+                image=tempImageList[7],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 2} - '{trackArray[self.trackCounter - 3][1]}'\n{trackArray[self.trackCounter - 3][2]}",
+                compound="right"
+            )
+            eighthLabel.grid(
+                row=4,
+                column=1
+            )
+
+            ninthLabel = tk.Label(
+                image=tempImageList[8],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter - 1} - '{trackArray[self.trackCounter - 2][1]}'\n{trackArray[self.trackCounter - 2][2]}",
+                compound="right"
+            )
+            ninthLabel.grid(
+                row=5,
+                column=0
+            )
+
+            tenthLabel = tk.Label(
+                image=tempImageList[9],
+                background="black", 
+                foreground="white", 
+                text=f"{self.trackCounter} - '{trackArray[self.trackCounter - 1][1]}'\n{trackArray[self.trackCounter - 1][2]}",
+                compound="right"
+            )
+            tenthLabel.grid(
+                row=5,
+                column=1
+            )
+
+
+            # ^ All ten tkinter label creation and placement for each page.
+
+        nextPage(self) # Initial details retrieved.       
+        showPage(self) # Initial page displayed.
+
+
 class TopTracksParent(tk.Tk): # Top 50 tracks over time frame.
     def __init__(self, termChoice):
         super().__init__()
@@ -394,17 +682,17 @@ class TopTracksChoiceGUI(ParentGUI): # Time frame selection.
         def shortTermCallback(event): 
             self.destroy()
             termChoice = 'short_term'
-            TopTracksParent(termChoice) 
+            TopTracks(termChoice) 
 
         def mediumTermCallback(event):
             termChoice = 'medium_term'
             self.destroy()
-            TopTracksParent(termChoice)
+            TopTracks(termChoice)
 
         def longTermCallback(event):
             termChoice = 'long_term'
             self.destroy()
-            TopTracksParent(termChoice)
+            TopTracks(termChoice)
 
         # ^ Destroys current window and opens top tracks GUI with respective term to the button pressed.
 
