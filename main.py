@@ -85,21 +85,28 @@ class TopTracks(tk.Tk):
         for columnAmount in range(2):
             self.columnconfigure(columnAmount, weight=1)
 
-        databaseConnection = sqlite3.connect('userRequests.db')
-        databaseCursor = databaseConnection.cursor()
+        try:
+            databaseConnection = sqlite3.connect('userRequests.db')
+            databaseCursor = databaseConnection.cursor()
 
-        if termChoice == 'short_term':
-            selectQuery = """SELECT * FROM shorttoptracks"""
-        elif termChoice == 'medium_term':
-            selectQuery = """SELECT * FROM mediumtoptracks"""
-        else:
-            selectQuery = """SELECT * FROM longtoptracks"""
+            if termChoice == 'short_term':
+                selectQuery = """SELECT * FROM shorttoptracks"""
+            elif termChoice == 'medium_term':
+                selectQuery = """SELECT * FROM mediumtoptracks"""
+            else:
+                selectQuery = """SELECT * FROM longtoptracks"""
 
-        databaseCursor.execute(selectQuery)
-        trackArray = databaseCursor.fetchall()
+            databaseCursor.execute(selectQuery)
+            trackArray = databaseCursor.fetchall()
+            print('Track items retrieved.')
 
-        databaseCursor.close()
-        databaseConnection.close()
+        except sqlite3.Error as error:
+            print("Connecting to database has returned an error:", error)
+        finally:
+            if databaseConnection:
+                databaseCursor.close()
+                databaseConnection.close()
+                print("The connection has closed.")
         
         def nextPage(self): # Displays next 10 results.
             self.trackCounter += 10
@@ -859,7 +866,7 @@ class Setup():
 
             print(databaseConnection.total_changes, 'changes to database.')
         except sqlite3.Error as error:
-            print("Connecting to sqlite has returned an error:", error)
+            print("Connecting to database has returned an error:", error)
         finally:
             if databaseConnection:
                 databaseCursor.close()
