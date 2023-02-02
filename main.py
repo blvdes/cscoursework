@@ -866,7 +866,7 @@ class Setup():
 
             print(databaseConnection.total_changes, 'changes to database.')
         except sqlite3.Error as error:
-            print("Connecting to database has returned an error:", error)
+            print("Connecting to database has returned an error: %s" % (' '.join(error.args)))
         finally:
             if databaseConnection:
                 databaseCursor.close()
