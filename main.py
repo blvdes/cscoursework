@@ -80,38 +80,39 @@ class TopTracks(tk.Tk):
         self.title("Long Term Top Tracks") # Changes window title.
 
         for rowAmount in range(6):
-            self.rowconfigure(rowAmount, weight=1) 
+            self.rowconfigure(rowAmount, weight=1) # Adds 6 rows to tkinter grid.
         
         for columnAmount in range(2):
-            self.columnconfigure(columnAmount, weight=1)
+            self.columnconfigure(columnAmount, weight=1) # Adds 2 columns to tkinter grid.
 
         try:
-            databaseConnection = sqlite3.connect('userRequests.db')
+            databaseConnection = sqlite3.connect('userRequests.db') # Opens database connection to read user data.
             databaseCursor = databaseConnection.cursor()
 
             if termChoice == 'short_term':
-                selectQuery = """SELECT * FROM shorttoptracks"""
+                selectQuery = """SELECT * FROM shorttoptracks""" 
             elif termChoice == 'medium_term':
                 selectQuery = """SELECT * FROM mediumtoptracks"""
             else:
-                selectQuery = """SELECT * FROM longtoptracks"""
+                selectQuery = """SELECT * FROM longtoptracks""" # Chooses the correct table for the term that the user picks.
 
-            databaseCursor.execute(selectQuery)
-            trackArray = databaseCursor.fetchall()
+            databaseCursor.execute(selectQuery) # Selects all data from correct table.
+            trackArray = databaseCursor.fetchall() # Fetches all data from correct table.
             print('Track items retrieved.')
 
         except sqlite3.Error as error:
-            print("Connecting to database has returned an error:", error)
+            print("Connecting to database has returned an error:", error) # Error handling for database connection.
+
         finally:
             if databaseConnection:
                 databaseCursor.close()
-                databaseConnection.close()
+                databaseConnection.close() # Closes database connections.
                 print("The connection has closed.")
         
         def nextPage(self): # Displays next 10 results.
-            self.trackCounter += 10
+            self.trackCounter += 10 # Counter increases by 10 to show next 10 results.
             global tempImageList
-            tempImageList = []
+            tempImageList = [] # Creates temporary list to store track images.
 
             for i in range(self.trackCounter - 10, self.trackCounter):
                 URL = trackArray[i][4]
@@ -124,17 +125,14 @@ class TopTracks(tk.Tk):
 
                 tempImageList.append(photo)
                 
-                # ^ Opens image URL and reads data for image label creation, then appends to temporary list.           
+                # ^ Opens each image URL for the page and reads data for the 10 image labels, then appends to temporary list.           
 
         def previousPage(self): # Displays previous 10 results.
-            self.trackCounter -= 10
+            self.trackCounter -= 10 # Counter decreases by 10 to show previous 10 results.
             global tempImageList
-            tempImageList = []
+            tempImageList = [] # Creates temporary list to store track images.
 
             for i in range(self.trackCounter - 10, self.trackCounter):
-
-                # ^ Appends all track details to temporary lists for object creation.
-                
                 URL = trackArray[i][4]
                 u = urlopen(URL)
                 raw_data = u.read()
@@ -145,7 +143,7 @@ class TopTracks(tk.Tk):
                 
                 tempImageList.append(photo)
 
-                # ^ Opens image URL and reads data for image label creation, then appends to temporary list.         
+                # ^ Opens each image URL for the page and reads data for the 10 image labels, then appends to temporary list.            
 
         def showPage(self): # GUI to display 10 tracks at a time, including all details and image for each track.
 
@@ -155,7 +153,7 @@ class TopTracks(tk.Tk):
                     widget.destroy()
                 showPage(self)
             
-            # ^ Clears GUI for next 10 results.
+            # ^ Clears GUI for next 10 results and calls next 10 results.
 
             def backCallback(event):
                 previousPage(self)
@@ -163,9 +161,9 @@ class TopTracks(tk.Tk):
                     widget.destroy()
                 showPage(self)
             
-            # ^ Clears GUI for previous 10 results.
+            # ^ Clears GUI for previous 10 results and calls previous 10 results.
 
-            if self.trackCounter == 50: # Removes the next page button if at the end of the 50 tracks.
+            if self.trackCounter == 50: # Removes the next page button if at the last page.
 
                 backButton = tk.Label(
                     text="< Back",
@@ -181,7 +179,7 @@ class TopTracks(tk.Tk):
                     backCallback
                 )
 
-            elif self.trackCounter == 10: # Removes the previous page button if at the end of the 50 tracks.
+            elif self.trackCounter == 10: # Removes the previous page button if at the first page.
                 
                 forwardButton = tk.Label(
                     text='Next >',
@@ -347,7 +345,7 @@ class TopTracks(tk.Tk):
                 column=1
             )
 
-            # ^ All ten tkinter label creation and placement for each page.
+            # ^ All ten tkinter label creation and placement for each page, containing track data and image.
 
         nextPage(self) # Initial details retrieved.       
         showPage(self) # Initial page displayed.
@@ -818,8 +816,8 @@ class Setup():
     def mainDatabase(self, token):
         self.spotify = tekore.Spotify(token)
         
-        try:
-            databaseConnection = sqlite3.connect('userRequests.db')
+        try: # Exception handling for database connection.
+            databaseConnection = sqlite3.connect('userRequests.db') # Opens connection to database, creates database on first run.
             databaseCursor = databaseConnection.cursor()
             
             def shortTermTopTracksTable():
@@ -830,9 +828,13 @@ class Setup():
                 
                 userTopTracks = self.spotify.current_user_top_tracks(time_range = 'short_term', limit=50)
 
+                # Creates table in database to store short-term tracks.
+
                 for track in userTopTracks.items:
                     databaseCursor.execute("""INSERT INTO shorttoptracks (name, artist, trackid, imageurl) VALUES (?, ?, ?, ?)""", (track.name, track.artists[0].name, track.id, track.album.images[2].url))
                     databaseConnection.commit()
+
+                    # Retrieves all user data for short-term top tracks and inserts into table.
             
             def mediumTermTopTracksTable():
                 databaseCursor.execute("""DROP TABLE IF EXISTS mediumtoptracks""")
@@ -842,9 +844,13 @@ class Setup():
                 
                 userTopTracks = self.spotify.current_user_top_tracks(time_range = 'medium_term', limit=50)
 
+                # Creates table in database to store medium-term tracks.
+
                 for track in userTopTracks.items:
                     databaseCursor.execute("""INSERT INTO mediumtoptracks (name, artist, trackid, imageurl) VALUES (?, ?, ?, ?)""", (track.name, track.artists[0].name, track.id, track.album.images[2].url))
                     databaseConnection.commit()
+
+                    # Retrieves all user data for medium-term top tracks and inserts into table.
 
             def longTermTopTracksTable():
                 databaseCursor.execute("""DROP TABLE IF EXISTS longtoptracks""")
@@ -854,29 +860,33 @@ class Setup():
                 
                 userTopTracks = self.spotify.current_user_top_tracks(time_range = 'long_term', limit=50)
 
+                # Creates table in database to store long-term tracks.
+
                 for track in userTopTracks.items:
                     databaseCursor.execute("""INSERT INTO longtoptracks (name, artist, trackid, imageurl) VALUES (?, ?, ?, ?)""", (track.name, track.artists[0].name, track.id, track.album.images[2].url))
                     databaseConnection.commit()
+
+                    # Retrieves all user data for medium-term top tracks and inserts into table.
 
 
             longTermTopTracksTable()
             mediumTermTopTracksTable()
             shortTermTopTracksTable()
-
+            # Function calling.
 
             print(databaseConnection.total_changes, 'changes to database.')
         except sqlite3.Error as error:
-            print("Connecting to database has returned an error: %s" % (' '.join(error.args)))
+            print("Connecting to database has returned an error: %s" % (' '.join(error.args))) # Returns specific error if problem with database.
         finally:
             if databaseConnection:
                 databaseCursor.close()
-                databaseConnection.close()
+                databaseConnection.close() # Closes connection with database.
                 print("The connection has closed.")
         return
     
     def spotifyOAuth(self, token):
         self.spotify = tekore.Spotify(token)
-        self.mainDatabase(token)
+        self.mainDatabase(token) # Passes token for data retrieval.
 
     def setupConfigFile(self, refreshToken):
         if refreshToken == False and self.configExists == False:
