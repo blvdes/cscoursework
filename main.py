@@ -77,7 +77,7 @@ class TopTracks(tk.Tk):
         self.configure(
             background="#8edcaa", # Changes backround colour to light green (#8edcaa).
         )
-        self.title("Long Term Top Tracks") # Changes window title.
+        self.title("Top Tracks") # Changes window title.
 
         for rowAmount in range(6):
             self.rowconfigure(rowAmount, weight=1) # Adds 6 rows to tkinter grid.
@@ -892,7 +892,7 @@ class Setup():
         if refreshToken == False and self.configExists == False:
             #Assigns client details to config.
             conf = (self.client_id, self.client_secret, self.redirect_uri)
-            file = 'tekore.cfg'
+            file = 'tekore.cfg' 
 
             #Opens browser for user authentication and refresh token.
             token = tekore.prompt_for_user_token(*conf, scope=tekore.scope.every)
@@ -915,7 +915,7 @@ class Setup():
                 self.spotifyOAuth(token)
                 pass
             except tekore.BadRequest:
-                self.setupConfigFile(False)
+                self.setupConfigFile(False) # Bad request results in token being refreshed.
         else:
             self.setupConfigFile(False) # Skips straight to browser authentication if config file does not exist.
 
